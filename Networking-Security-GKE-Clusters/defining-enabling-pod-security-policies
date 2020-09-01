@@ -1,0 +1,65 @@
+- Have a created cluster -> see in internal-load-balancer file!!!
+- export PS1="\[\e[34m\]\w\[e\[m\]>\n-->" <type enter>
+- gcloud container clusters get-credentials spikey-website-cluster --zone us-central1-a --project mihai-281118
+- kubectl create namespace spikey-pod
+- kubectl create serviceaccount intern -n spikey-pod
+
+- create a role which allows the intern service account the edit role in the cluster - this is a non-admin role:
+    - kubectl create rolebinding intern-editor --clusterrole=edit --serviceaccount=spikey-pod:intern -n spikey-pod
+    - Go to Cloud Shell Editor -> In folder named=gke-networking-yaml-files -> 
+      create new file named=spikey-psp.yaml:
+        apiVersion: extensions/v1beta1
+        kind: PodSecurityPolicy
+        metadata:
+        name: spikey-psp
+        spec:
+        privileged: false
+        seLinux:
+            rule: RunAsAny
+        supplementalGroups:
+            rule: RunAsAny
+        runAsUser:
+            rule: RunAsAny
+        fsGroup:
+            rule: RunAsAny
+        volumes:
+        - '*'
+
+    - gcloud beta container clusters update spikey-website-cluster --enable-pod-security-policy --zone=us-central1-a
+    - kubectl auth can-i use podsecuritypolicy/spikey-psp --as=system:serviceaccount:spikey-pod:intern -n spikey-pod
+
+    - Go to Cloud Shell Editor -> In folder named=gke-networking-yaml-files -> 
+      create new file named=create-pod.yaml:
+        apiVersion: v1
+        kind: Pod
+        metadata:
+        name: spikey-pod
+        spec:
+        containers:
+            - name: spikey-website-pod
+            image: gcr.io/mihai-281118/spikey-website2:v1
+
+    - kubectl apply -f create-pod.yaml --as=system:serviceaccount:spikey-pod:intern -n spikey-pod (return a error)
+    - gcloud info | grep Account
+    - kubectl create clusterrolebinding spikey-website-cluster-admin-binding \
+      --clusterrole=cluster-admin --user=mihaivirlan93@gmail.com
+
+    - kubectl create role psp:unprivileged -n spikey-pod --verb=use --resource=podsecuritypolicy --resource-name=spikey-psp
+    - kubectl create rolebinding intern:psp:unprivileged -n spikey-pod --role=psp:unprivileged --serviceaccount=spikey-pod:intern
+    - kubectl apply -f create-pod.yaml
+    - Check Kubernetes Engine -> Workloads
+
+    - Go to Cloud Shell Editor -> In folder named=gke-networking-yaml-files -> 
+      create new file named=create-privileged-pod.yaml:
+        apiVersion: v1
+        kind: Pod
+        metadata:
+        name: privileged-spikey-pod
+        spec:
+        containers:
+            - name: spikey-website-pod
+            image: gcr.io/mihai-281118/spikey-website2:v1
+            securityContext:
+                privileged: true
+
+    - kubectl apply -f create-privileged-pod.yaml --as=system:serviceaccount:spikey-pod:intern -n spikey-pod

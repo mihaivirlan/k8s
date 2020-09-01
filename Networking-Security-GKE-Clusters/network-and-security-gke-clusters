@@ -1,0 +1,73 @@
+- Configuring Ingress and Egress Networking Policies
+    - Open Cloud Shell -> type -> export PS1="\[\e[34m\]\w\[e\[m\]>\n-->" <type enter>
+        - gcloud container clusters create spikey-cluster --enable-network-policy --zone us-central1-a --project mihai-281118
+        - Kubernetes Engine -> Clusters -> click connect button -> copy command-line access command and paste on Cloud Shell ->
+          gcloud container clusters get-credentials spikey-cluster --zone us-central1-a --project mihai-281118 (in my case)
+        
+        - kubectl run spikey-website --labels app=spikey-website --image=gcr.io/mihai-281118/spikey-website2:v1 --port 80 --expose
+        - Check from Kubernetes Engine -> Workloads && Services & Ingress
+        - Specify the Ingress and Egress Policies
+
+            - Go to Cloud Shell Editor -> Create new folder named=gke-networking-yaml-files -> in this new created directory ->
+              create a new file named=spikey-allow-from-dev.yaml and create the policies for Ingress:
+                kind: NetworkPolicy
+                apiVersion: networking.k8s.io/v1
+                metadata:
+                name: spikey-allow-from-dev
+                spec:
+                policyTypes:
+                - Ingress
+                podSelector:
+                    matchLabels:
+                    app: spikey-website
+                ingress:
+                - from:
+                    - podSelector:
+                        matchLabels:
+                        app: dev
+
+            - cd gke-networking-yaml-files
+                - kubectl apply -f spikey-allow-from-dev.yaml
+                - gcloud auth configure-docker
+                - kubectl run -l app=dev --image=alpine --restart=Never --rm -i -t test-pod
+                    - from logged interactive shell type
+                        - wget -qO- --timeout=2 http://spikey-website:80
+                        - exit
+
+                - kubectl run -l app=test --image=alpine --restart=Never --rm -i -t test-pod
+                    - wget -qO- --timeout=2 http://spikey-website:80 - and should see what can't acces the app because the label isn't=dev
+                    - exit
+
+                - Go to Cloud Shell Editor -> In folder named=gke-networking-yaml-files -> 
+                  create new file named=dev-allow-from-spikey.yaml and create the policies for Egress:
+                    kind: NetworkPolicy
+                    apiVersion: networking.k8s.io/v1
+                    metadata:
+                    name: dev-allow-from-spikey
+                    spec:
+                    policyTypes:
+                    - Egress
+                    podSelector:
+                        matchLabels:
+                        app: dev
+                    egress:
+                    - to:
+                        - podSelector:
+                            matchLabels:
+                            app: spikey-website
+                    - ports:
+                        - port: 53
+                        protocol: TCP
+                        - port: 53
+                        protocol: UDP
+
+                - cd gke-networking-yaml-files
+                    - kubectl apply -f dev-allow-from-spikey.yaml
+                    - kubectl run nginx --labels app=nginx --image=nginx --port 9000 --expose
+                    - kubectl run -l app=dev --image=alpine --restart=Never --rm -i -t test-pod
+                    - wget -qO- --timeout=2 http://spikey-website:80
+                    - wget -qO- --timeout=2 http://nginx:9000
+                    - wget -qO- --timeout=2 http://www.example.com
+                    - exit
+
+                - gcloud container clusters delete spikey-cluster --zone us-central1-a --project mihai-281118

@@ -1,0 +1,90 @@
+1. Update Ubuntu dependencies
+		- sudo apt-get update
+		- sudo apt-get install -y apt-transport-https
+
+
+2. Install VirtualBox on Ubuntu
+		- sudo apt update
+		- sudo apt-get install -y virtualbox virtualbox-ext-pack
+
+
+3. Install microk8s
+		- sudo snap install microk8s --classic
+		- snap info microk8s
+		- microk8s.status (if this command don't run, need to add your user to group microk8s, as follow)
+		- sudo usermod -a -G microk8s mihail (after add user mihail to group microk8s, need to logout and login again for implementation this policy/rule)
+		- microk8s.status
+		- microk8s.kubectl
+		- snap alias microk8s.kubectl kubectl
+		- microk8s.kubectl config view --raw > $HOME/.kube/config
+
+	
+4. Install kubectl
+		- sudo apt-get update
+		- sudo touch /etc/apt/sources.list.d/kubernetes.list
+		- curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+		- echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+		- sudo apt-get update
+		- sudo apt-get install -y kubectl
+		- kubectl version
+		- kubectl version --short
+
+		- Summary of each of your available contexts
+			- kubectl config get-contexts
+
+		- Check on the status of the core master components
+			- kubectl get cs
+
+		- Info about each of the individual nodes that are members of your cluster
+			- kubectl get nodes -o wide
+		
+		- kubectl api-versions
+
+		- Namespaces available within a cluster
+			- kubectl get namespaces
+
+		- apt-cache policy kubelet | head -n 20
+
+		- Additional connection and service information information 
+			- kubectl cluster-info
+
+		- View the current configuration
+			- kubectl config view
+
+		- kubectl get pods --all-namespaces
+		- kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.10
+		- kubectl expose deployment hello-minikube --type=NodePort --port=8080
+		- kubectl get pod
+		- kubectl get svc
+		- kubectl exec -it hello-minikube-797f975945-4z76s curl 10.152.183.253:8080
+		- kubectl describe svc hello-minikube
+		- kubectl describe pods hello-minikube
+
+		- Delete the hello-minikube Service
+			- kubectl delete services hello-minikube
+
+		- Delete the hello-minikube Deployment
+			- kubectl delete deployment hello-minikube
+
+		
+5. Install kubeadm
+		- apt install kubeadm
+		- systemctl status kubelet.service
+		- systemctl status docker.service
+		- systemctl enable kubelet.service
+		- systemctl enable docker.service
+
+
+4. Install minikube on personal laptop (because in virtualbox it's not support)
+		- curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube
+		- sudo mkdir -p /usr/local/bin/
+		- sudo install minikube /usr/local/bin/
+		- minikube start --vm-driver=<driver_name>
+		- minikube status
+		- lscpu | grep -i virt
+		- sudo minikube start --vm-driver=none / minikube start --no-vtx-check
+		- sudo minikube status
+		- minikube start / stop / delete
+		
+		
+		

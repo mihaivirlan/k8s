@@ -1,0 +1,137 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+	- export PS1="\[\e[34m\]\w\[e\[m\]>\n-->" <type enter>
+	- gcloud config set project mihai-281118 <type enter> (mihai-281118 - is my user from gcloud command line)
+	- gcloud compute machine-types list | less <type enter>
+	- gcloud compute machine-types list | grep us-central1-a <type enter>
+	- gcloud container clusters create my-zonal-cluster --zone us-central1-a --preemptible --machine-type n1-standard-1 --no-enable-cloud-monitoring --no-enable-cloud-logging <type enter>
+	- after created type:
+		- gcloud container clusters describe my-zonal-cluster --zone us-central1-a <type enter>
+		- exit from shell
+
+	- From Google Cloud Menu acces -> Logging -> Logs Viewer -> Audit Resource -> Kubernetes Clusters -> Choose your cluster
+		- if logs are disabled run follow from google cloud command line:
+			- gcloud container clusters update my-zonal-cluster --zone us-central1-a --logging-service="logging.googleapis.com"
+
+
+	- Configuring custom Node Pools and Resizing Clusters
+		- gcloud beta container clusters get-credentials my-zonal-cluster --region us-central1-a --project mihai-281118
+		- gcloud container node-pools list --cluster my-zonal-cluster --region us-central1-a
+		- gcloud container node-pools create my-pool --num-nodes=2 --cluster my-zonal-cluster --region us-central1-a
+		- gcloud container node-pools list --cluster my-zonal-cluster --region us-central1-a
+		- gcloud container clusters resize my-zonal-cluster --region us-central1-a --node-pool my-pool --size 4
+
+	- Using kubectl to manage Deployments and Expose Services
+		- cat ~/.kube/config
+		- kubectl config current-context
+		- kubectl cluster-info
+		- kubectl config view
+		- gcloud container clusters get-credentials my-zonal-cluster --zone us-central1-a --project mihai-281118
+		- kubectl config current-context
+		- kubectl run nginx-1 --image=nginx --replicas=2
+			- this command to equal with Google Cloud Menu -> Kubernetes Engine -> Workloads -> Deploy -> etc....
+		
+		- kubectl get pods -owide / or click to Kunernetes Engine -> Workloads
+		- kubectl get nodes
+		- kubectl expose deployment nginx-1 --port=80 --target-port=80 --type=LoadBalancer / or expose node from Workloads
+		- kubectl get service nginx-1
+
+	- Using kubectl to Update Clusters Delete Services and Deployments
+		- gcloud container clusters update my-zonal-cluster --zone us-central1-a --node-locations us-central1-a,us-central1-b
+			- and check again Kubernetes Engine -> Clusters
+		
+		- kubectl delete service nginx-1
+			- and check again Kubernetes Engine -> Services & Ingress
+
+		- kubectl delete deployment nginx-1
+			- and check again Kubernetes Engine -> Workloads
+
+		- gcloud container clusters delete my-zonal-cluster --region us-central1-a
+			- and check again Kubernetes Engine -> Clusters
+
+	- Configure a Horizontal Pod Autoscaler Using kubectl
+		- Go to Google Cloud Menu -> Activate Cloud Shell -> type from opened cloud shell:
+			- export PS1="\[\e[34m\]\w\[e\[m\]>\n-->"
+			- gcloud config set compute/zone us-central1-b
+			- gcloud container clusters create autoscaling-cluster
+			- kubectl run php-apache --image=k8s.gcr.io/hpa-example --requests=cpu=200m --expose --port=80
+			- kubectl get nodes
+			- kubectl pods
+			- kubectl services
+			- kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=10
+			- kubectl get hpa
+			- kubectl run -i --tty load-generator --image=busybox /bin/sh
+				- while true; do wget -q -O- http://php-apache.default.svc.cluster.local; done
+				- from another shell run:
+					- kubectl get hpa
+	
+				- kubectl get deployment php-apache
+
+
+
+
+- gcloud creating regional cluster - gcloud shell
+	- Go in google cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+		- export PS1="\[\e[34m\]\w\[e\[m\]>\n-->" <type enter>
+		- gcloud config set project mihai-281118 <type enter> (mihai-281118 - is my user from gcloud command line)
+		- gcloud config set compute/region us-central1 <type enter>
+		- gcloud components update <type enter>
+		- gcloud container clusters create my-regional-cluster --num-nodes 2 --region us-central1 --disk-size=15GB --disk-type=pd-standard --enable-autoscaling --min-nodes 1 --max-nodes 10 --enable-autorepair <type enter>
+		- close console -> Go to menu Google Cloud -> Kubernetes Engine -> Clusters -> and can see the created cluster
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

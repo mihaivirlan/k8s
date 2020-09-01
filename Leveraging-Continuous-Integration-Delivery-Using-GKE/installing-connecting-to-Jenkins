@@ -1,0 +1,16 @@
+- Open Cloud Shell Editor
+	- Open continuous-deployment-on-kubernetes cloned project
+	- Open jenkins folder -> values.yaml file -> read the file
+	- From Cloud Shell
+		- cd continuous-deployment-on-kubernetes
+		- ./helm install -n cd stable/jenkins -f jenkins/values.yaml --version 0.16.6 --wait
+		- kubectl get pods
+		- export POD_NAME=$(kubectl get pods -l "component=cd-jenkins-master" -o jsonpath="{.items[0].metadata.name}")
+		- kubectl port-forward $POD_NAME 8080:8080 >> /dev/null &
+		- kubectl get svc
+		- printf $(kubectl get secret cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo (and see the password)
+		- click on right-top nearly of button close terminal from Cloud Shell -> Web Preview -> Preview on port 8080 ->
+		  should open a new tab in new window with Jenkins web interface -> Login into with credentials -> 
+		  admin:password_obtain_above(something like: vYyaKI3lPH)
+			
+		

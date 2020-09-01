@@ -1,0 +1,39 @@
+Private Clusters - All Nodes have only internal IP, not external IP addresses.
+Cluster workloads will be isolated from the public internet.
+Cannot be accessed by external clients.
+
+- Create a new Private Cluster
+    - export PS1="\[\e[34m\]\w\[e\[m\]>\n-->" <type enter>
+    - gcloud config set compute/zone us-central1-a
+    - gcloud beta container clusters create spikey-website-cluster --private-cluster --master-ipv4-cidr 172.16.0.16/28 \
+      --enable-ip-alias --create-subnetwork "" --project mihai-281118
+
+- Create a new Virtual Machine who will interact with Private Cluster which was created above
+    - gcloud compute instances create content-team-instance --zone us-central1-a --project mihai-281118
+    - Go to Menu -> Compute Engine -> VM instances -> click -> content-team-instance
+
+    - gcloud config set project mihai-281118
+    - gcloud container clusters get-credentials spikey-website-cluster --zone us-central1-a
+    - gcloud compute networks subnets list --network default
+    - gcloud compute networks subnets describe gke-spikey-website-cluster-subnet-4349094b --region us-central1 -> and should see ->
+      privateIpGoogleAccess: true
+
+    - gcloud config set compute/zone us-central1-a
+    - gcloud compute instances stop content-team-instance
+    - gcloud compute instances set-service-account content-team-instance \
+      --zone=us-central1-a --scopes 'https://www.googleapis.com/auth/cloud-platform'
+
+    - Go to Compute Engine -> VM instances -> click on content-team-instance machine and click the start button
+
+    - From Cloud Shell
+        - gcloud compute instances describe content-team-instance --zone us-central1-a | grep natIP
+        - gcloud container clusters update spikey-website-cluster --enable-master-authorized-networks \
+          --master-authorized-networks 34.69.163.43/32 (this is my ip address obtained after running above command)
+
+        - gcloud container clusters get-credentials spikey-website-cluster --zone us-central1-a
+
+        - Now my VM instance - content-team-instance, are authorized to acces my private cluster!!!
+
+        - sudo apt-get install kubectl
+        - kubectl get nodes --output yaml | grep -A4 addresses
+        - finally, delete the vm instance and the private cluster

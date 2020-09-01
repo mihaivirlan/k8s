@@ -1,0 +1,37 @@
+- From Cloud Shell
+	- cd continuous-deployment-on-kubernetes/sample-app
+	- gcloud alpha source repos create default
+	- From Kubernetes Engine -> Menu -> Source Repositories -> click on default repository
+	- From Cloud Shell
+		- git init
+		- git config credential.helper gcloud.sh
+		- git remote add origin https://source.developers.google.com/p/mihaivirlan93/r/default
+		- git config --global user.email "mihaivirlan93@gmail.com"
+		- git config --global user.name "mihaivirlan93" / git config --global user.name "mihai-281118"
+		- git add .
+		- git commit -m "Initial commit"
+		- git push origin master
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ gcloud container clusters get-credentials jenkins-cd --zone us-central1-a --project mihai-281118

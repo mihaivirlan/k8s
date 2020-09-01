@@ -1,0 +1,24 @@
+- Lauch cluster
+	- minikube start --wait=false
+	- kubectl get nodes
+
+- Kubectl run
+	- kubectl run http --image=katacoda/docker-http-server:latest --replicas=1
+	- kubectl get deployments
+	- kubectl describe deployment http
+
+- Kubectl expose
+	- kubectl expose deployment http --external-ip="172.17.0.26" --port=8000 --target-port=80
+	- curl http://172.17.0.26:8
+
+- Kubectl run and expose
+	- kubectl run httpexposed --image=katacoda/docker-http-server:latest --replicas=1 --port=80 --hostport=8001
+	- curl http://172.17.0.26:
+	- kubectl get svc
+	- docker ps | grep httpexposed
+
+- Scale containers
+	- kubectl scale --replicas=3 deployment http
+	- kubectl get pods
+	- kubectl describe svc http
+	- curl http://172.17.0.26:

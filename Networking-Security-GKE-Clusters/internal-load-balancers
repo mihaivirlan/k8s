@@ -1,0 +1,47 @@
+- Create and configure an internal load balancer to access applications on the cluster
+- Accessible only to VMs on the same network and in the same region
+- gcloud container get-server-config
+- gcloud container clusters create spikey-website-cluster --enable-ip-alias --create-subnetwork=""  \
+  --network=default --zone=us-central1-a --cluster-version=1.15.12-gke.2
+
+- After created cluster run -> Kubernetes Engine -> Clusters -> click on created cluster -> click Deploy option ->
+  from Container -> Edit Container -> Select a custom image from Image Registry -> gcr.io/mihai-281118/spikey-website2 -> v1 ->
+  Next/Done -> Aplication Name -> spikey-website -> Deploy -> After created Deployment -> click Expose option ->
+  Port:80 Target Port:80 -> Service Type -> Load Balancer -> Service Type -> Cluster IP -> click Expose button ->
+  check the Workloads and Services & Ingress -> try to access from browser -> http://10.34.16.3 ->
+  and see what servcie will be expose on internal ip address/inside the container.
+
+- From Compute Engine -> VM instances -> access one from these nodes with SSH session ->
+  and after connection on one of nodes run -> curl 10.34.7.28 (this is ip address for - spikey-website-service)
+  - Create new VM instance and choose another zone for it and try again from new machine to run -> curl 10.34.7.28 ->
+    would see what can't access it, because it's in different network.
+
+- Go to Cloud Shell Editor -> In folder named=gke-networking-yaml-files -> 
+  create new file named=spikey-internal-lb-service.yaml:
+    apiVersion: v1
+    kind: Service
+    metadata:
+    name: spikey-internal-service
+    annotations:
+        cloud.google.com/load-balancer-type: "Internal"
+    labels:
+        app: spikey-website
+    spec:
+    type: LoadBalancer
+    ports:
+    - name: port-name
+        port: 80
+        protocol: TCP
+    selector:
+        app: spikey-website
+
+- From Cloud Shell
+    - cd gke-networking-yaml-files
+        - kubectl apply -f spikey-internal-lb-service.yaml
+        - Go to Kubernetes Engine -> Services & Ingress -> would see the new internal service created
+        - Try to access from browser new spikey-internal-service -> would see what can't access it,
+          because it's a internal Load Balancer service
+          - Try run -> curl 10.34.16.5:80 from one of VM instances who are in same zone but in different network ->
+            would see what curl works.
+          - Try run -> curl 10.34.16.5:80 from one of VM instances who are in different zone and see what curl don't work.
+          - Delete VMs(instance-1/instance-2/or another something else) and Workloads && Services & Ingress.

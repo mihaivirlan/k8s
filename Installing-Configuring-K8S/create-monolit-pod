@@ -1,0 +1,46 @@
+1. Create pod
+	- mkdir pods
+	- nano pods/monolith.yaml
+		apiVersion: v1
+		kind: Pod
+		metadata:
+		  name: monolith
+		  labels:
+		    app: monolith
+		spec:
+		  containers:
+		    - name: monolith
+		      image: kelseyhightower/monolith:1.0.0
+		      args:
+			- "-http=0.0.0.0:80"
+			- "-health=0.0.0.0:81"
+			- "-secret=secret"
+		      ports:
+			- name: http
+			  containerPort: 80
+			- name: health
+			  containerPort: 81
+		      resources:
+			limits:
+			  cpu: 0.2
+			  memory: "10Mi"
+
+	- kubectl create -f pods/monolith.yaml
+	- kubectl get pods
+	- kubectl describe pods monolith
+	- kubectl port-forward monolith 10080:80 (in one shell and leave that)
+
+
+2. Port forwarding and accesing pod
+	- curl http://127.0.0.1:10080 (open new shell and type in this)
+	- curl http://127.0.0.1:10080/secure
+	- curl -u user http://127.0.0.1:10080/login (password: password)
+	- curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE1NzY5NDE3NDAsImlhdCI6MTU3NjY4MjU0MCwiaXNzIjoiYXV0aC5zZXJ2aWNlIiwic3ViIjoidXNlciJ9.qY86s_ZsdqOzj1YYNUSRPU_icuqQUbjLnfa8dnufdlk" http://127.0.0.1:10080/secure
+	- kubectl logs monolith
+	- kubectl logs -f monolith
+	- sudo kubectl exec monolith --stdin --tty -c monolith /bin/sh
+	- ping -c 3 google.com (from pod monolith)
+
+
+
+

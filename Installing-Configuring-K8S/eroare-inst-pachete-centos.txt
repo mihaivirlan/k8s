@@ -1,0 +1,20 @@
+Dupa instalarea sistemului de operare CentOS7 cand vrem sa instalam primele pachete, nu putem.
+In cazul dat trebuie sa rulam urmatoarele comenzi":
+
+1.yum list
+2.dupa rularea primei comenzi vom obtine id-ul procesului care trebuie omorat cu kill, deci rulam: ps -ef | grep 13512(exemplu de process id)
+3.kill -9 13512 / pkill PackageKit
+4.dupa trebuie sa rulam update de sistem: yum update -y
+
+
+
+35.238.144.77 - IP Server SoftEther VPN
+
+
+Credentiale Pluralsight:
+
+Username: Roman.gherta@gmail.com
+Password: Bucuresti7
+
+
+Kubernetes - este un sistem open source pentru gestionarea aplicațiilor containerizate pe mai multe gazde; furnizarea de mecanisme de bază pentru implementarea, întreținerea și scalarea aplicațiilor.

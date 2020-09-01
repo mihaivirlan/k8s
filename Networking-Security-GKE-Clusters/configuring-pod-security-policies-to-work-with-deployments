@@ -1,0 +1,4 @@
+- export PS1="\[\e[34m\]\w\[e\[m\]>\n-->" <type enter>
+- cd gke-networking-yaml-files
+- gcloud container clusters get-credentials spikey-website-cluster --zone us-central1-a --project mihai-281118
+- kubectl run spikey --image=gcr.io/mihai-281118/spikey-website2:v1 --as=system:serviceaccount:spikey-pod:intern -n spikey-pod1

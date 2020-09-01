@@ -1,0 +1,80 @@
+La erorile aparute atunci cand dupa instalarea kubeadm, kubelet, docker, etc, trebuie sa rulam urmatoarele comenzi pentru a scapa de erori si pentru a putea rula kubeadm init:
+
+1.sudo yum update -y
+
+2.sudo yum install -y docker
+
+3.sudo systemctl enable docker && sudo systemctl start docker
+
+4.yum install docker kubelet kubeadm kubectl kubernetes-cni
+
+5.systemctl enable docker
+
+6.systemctl start docker
+
+7.systemctl enable kubelet
+
+8.systemctl start kubelet
+
+9.sudo bash -c 'cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+
+
+10.Install Kubernetes packages
+In order to grab latest package for Kubernetes, we need to configure our yum repository. Copy and page below line of code to create new config file for Kubernetes yum repo:
+
+	[kubernetes]
+	name=Kubernetes
+	baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+	enabled=1
+	gpgcheck=1
+	repo_gpgcheck=1
+	gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+	exclude=kube*
+	EOF'
+
+11.sudo setenforce 0
+
+12.sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+13.sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+14.sudo systemctl enable kubelet && sudo systemctl start kubelet
+
+15.sudo firewall-cmd --permanent --add-port=6443/tcp && sudo firewall-cmd --permanent --add-port=10250/tcp && sudo firewall-cmd --reload
+
+16.Set IPTables settings
+Copy and paste below line of code on your master and worker node:
+
+	sudo bash -c 'cat <<EOF >  /etc/sysctl.d/k8s.conf
+	net.bridge.bridge-nf-call-ip6tables = 1
+	net.bridge.bridge-nf-call-iptables = 1
+	EOF'
+
+17.sudo sysctl --system
+
+18.sudo lsmod | grep br_netfilter
+
+19.sudo kubeadm config images pull
+
+20.nano /etc/selinux/config
+	and make sure SELINUX line is set to permissive or disabled:
+	SELINUX=disabled
+
+21.sudo swapoff -a
+
+22.sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+23.kubeadm init
+
+
+Dupa initializarea cu succes a kubeadm, trebuie sa iesim de sub root si sa rulam de sub user urmatoarele comenzi:
+
+1.mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+2.kubectl config set-cluster demo-cluster --server=http://master.example.com:8080
+  kubectl config set-context demo-system --cluster=demo-cluster
+  kubectl config use-context demo-system
+  kubectl get nodes
+

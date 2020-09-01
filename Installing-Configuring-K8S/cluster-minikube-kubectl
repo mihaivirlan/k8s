@@ -1,0 +1,56 @@
+1. Install minikube on personal laptop and start it
+		- curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64   && chmod +x minikube
+		- sudo mkdir -p /usr/local/bin/
+		- sudo install minikube /usr/local/bin/
+		- minikube start --vm-driver=virtualbox
+
+
+2. Install kubectl on personal laptop and working with pods
+		- sudo apt-get update
+		- sudo touch /etc/apt/sources.list.d/kubernetes.list
+		- curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+		- echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+		- sudo apt-get update
+		- sudo apt-get install -y kubectl
+		- kubectl version
+		- kubectl version --short
+		- kubectl config get-contexts
+		- kubectl get cs
+		- kubectl get nodes -o wide
+		- kubectl api-versions
+		- kubectl get namespaces
+		- apt-cache policy kubelet | head -n 20
+		- kubectl cluster-info
+		- kubectl config view
+		- kubectl get pods --all-namespaces
+		
+		- Deploy ngnix App to One of the Nodes of the Cluster
+			- kubectl get nodes
+			- kubectl run my-nginx --image=nginx --port=80
+			- kubectl get pods
+			- kubectl get deployment
+
+		- Expose ngnix App Outside of the Cluster
+			- kubectl expose deployment my-nginx --port=80 --type=LoadBalancer
+			- kubectl get deployment
+			- kubectl describe pods my-nginx
+			- kubectl port-forward my-nginx-75897978cd-72p7j 10080:80
+				- after this nginx should be running in browser: 127.0.0.1:10080
+
+
+3. Access minikube dashboard in browser on your personal laptop by running:
+		- minikube dashboard
+		- kubectl get pod
+		- kubectl get nodes
+		- kubectl cluster-info
+		- minikube status
+		- kubectl get all
+		- kubectl get pods --all-namespaces
+
+
+
+
+
+
+
+

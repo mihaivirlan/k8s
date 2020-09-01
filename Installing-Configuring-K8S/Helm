@@ -1,0 +1,100 @@
+- Install Helm
+	- Helm is a cluster administration tool that manages charts on Kubernetes.
+	  The Helm CLI tool deploys charts to Kubernetes.
+	  A server side component can accept the chart and submit the YAML declarations to Kubernetes.
+	  The chart is a deployable unit that can be inspected, listed, updated and removed.
+
+	- curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+	- helm version --short
+	- helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+	- helm env
+
+- Search for redis chart
+	- helm search hub redis
+	- helm repo list
+	- helm search repo redis
+	- helm show chart stable/redis / helm show readme stable/redis
+
+- Deploy redis
+	- kubectl create namespace redis
+	- helm install my-redis stable/redis --namespace redis
+	- helm list / helm ls
+
+- Observe redis
+	- watch kubectl get deployments,pods,services -n redis
+	- clear / ctrl+c
+	- kubectl apply -f pv.yaml
+	- mkdir /mnt/data1 /mnt/data2 /mnt/data3 --mode=777
+	- watch kubectl get deployments,pods,services -n redis
+	- clear / ctrl+c
+
+- Remove redis
+	- helm delete my-redis
+
+- Explore repositories
+	- helm repo list
+	- echo "The number of charts is: $(helm search repo | wc -l)."
+	- helm search repo postgres
+	- helm search repo sonarqube
+	- helm search repo rabbitmq
+	- helm search repo kafka
+	- helm search repo prometheus-operator
+	- helm search repo tensorflow
+	- helm search repo stable/redis
+	- helm search repo stable | sed -E "s/(.{27}).*$/\1/"
+	- helm search repo stable | sed -E "s/(.{27}).*$/\1/"helm search hub --max-col-width=80 | sed -E "s/(.{70}).*$/\1/"
+	- helm repo add fabric8 https://fabric8.io
+	- helm repo list
+	- helm search repo fabric8
+	- helm search repo fabric8helm inspect chart fabric8/ipaas-platform
+	
+	- Incubator charts
+		- helm repo add incubator https://kubernetes-charts-incubator.storage.go
+		- helm search repo | grep -c 'incubator/'
+
+- Create chart
+	- helm create app-chart
+	- tree app-chart
+	- cat app-chart/templates/deployment.yaml | grep 'kind:' -n -B1 -A5
+	- cat app-chart/templates/deployment.yaml | grep 'image:' -n -B3 -A3
+	- cat app-chart/values.yaml | grep 'repository' -n -B3 -A3
+	- helm install my-app ./app-chart --dry-run --debug | grep 'image: "' -n -B3 -A3
+	- helm install my-app ./app-chart --dry-run --debug --set image.pullPolicy=Always | grep 'image: "' -n -B3 -A3
+	- helm list
+	- kubectl get deployments,service
+
+- Update chart
+	- helm upgrade my-app ./app-chart --install --reuse-values --set service.type=NodePort
+	- kubectl patch service my-app-app-chart --type='json' --patch='[{"op": "replace", "path": "/spec/ports/0/nodePort", "value":31111}]'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
