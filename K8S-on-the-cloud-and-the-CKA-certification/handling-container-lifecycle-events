@@ -1,0 +1,33 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+- gcloud config set project mihai-281118 <type enter> (mihai-281118 - is my user from gcloud command line)
+- gcloud config set account mihaivirlan93@gmail.com
+	
+- gcloud container clusters create my-first-cluster --num-nodes 1
+- kubectl delete pods --all
+- kubectl get pod
+- kubectl run first-deployment --image=nginx
+- kubectl get pod
+
+- nano lifecycle.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-demo
+spec:
+  containers:
+  - name: lifecycle-demo-container
+    image: nginx
+    lifecycle:
+      postStart:
+        exec:
+          command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+      preStop:
+        exec:
+          command: ["/usr/sbin/nginx","-s","quit"]
+
+- kubectl create -f lifecycle.yaml
+- kubectl get pods
+- kubectl exec -it lifecycle-demo -- /bin/bash
+    - cat /usr/share/message
+
+

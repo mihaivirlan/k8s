@@ -1,0 +1,39 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+- gcloud config set project mihai-281118 <type enter> (mihai-281118 - is my user from gcloud command line)
+- gcloud config set account mihaivirlan93@gmail.com
+	
+- gcloud container clusters create my-first-cluster --num-nodes 1
+- kubectl get pod
+
+- nano declarative-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: declarative-pod
+  labels:
+    pod: updated
+spec:
+  containers:
+  - name: memory-demo-ctr
+    image: nginx
+
+- kubectl apply -f declarative-pod.yaml
+- kubectl get pods
+- kubectl describe pods declarative-pod
+
+
+- nano declarative-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: declarative-pod
+  labels:
+    pod: updated
+spec:
+  containers:
+  - name: memory-demo-ctr
+    image: busybox
+
+- kubectl apply -f declarative-pod.yaml
+- kubectl get pods
+- kubectl describe pods declarative-pod

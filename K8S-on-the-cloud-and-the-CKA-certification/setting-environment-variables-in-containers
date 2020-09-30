@@ -1,0 +1,76 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+- gcloud config set project mihai-281118 <type enter> (mihai-281118 - is my user from gcloud command line)
+- gcloud config set account mihaivirlan93@gmail.com
+	
+- gcloud container clusters create my-first-cluster --num-nodes 1
+- kubectl delete pods --all
+- kubectl get pod
+
+- nano envars.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envar-demo
+  labels:
+    purpose: demonstrate-envars
+spec:
+  containers:
+  - name: envar-demo-container
+    image: gcr.io/google-samples/node-hello:1.0
+    env:
+    - name: DEMO_GREETING
+      value: "Hello from the environmnet"
+    - name: DEMO_FAREWELL
+      value: "Such a sweet sorrow"
+
+- kubectl create -f envars.yaml
+- kubectl get pods
+- kubectl get pods -l purpose=demonstrate-envars
+- kubectl exec -it envar-demo -- /bin/bash
+- printenv
+
+
+- Downward API Passing information from pod to container
+- kubectl get pods
+
+- nano dapi-volume.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubernetes-downwardapi-volume-example
+  labels:
+    zone: us-est-coast
+    cluster: test-cluster1
+  annotations:
+    build: two
+    builder: john-doe
+spec:
+  containers:
+    - name: client-container
+      image: k8s.gcr.io/busybox
+      command: ["sh", "-c"]
+      args:
+      - while true; do
+          if [[ -e /etc/podinfo/labels ]]; then
+            echo -en '\n\n'; cat /etc/podinfo/labels; fi;
+          if [[ -e /etc/podinfo/annotations ]]; then
+            echo -en '\n\n'; cat /etc/podinfo/annotations;
+          sleep 5;
+        done;
+      volumeMounts:
+        - name: podinfo
+          mountPath: /etc/podinfo
+          readOnly: false
+  volumes:
+    - name: podinfo
+      downwardAPI:
+        items:
+          - path: "labels"
+            fieldRef:
+              fieldPath: metadata.labels
+          - path: "annotations"
+            fieldRef:
+              fieldPath: metadata.annotations
+
+
+- kubectl create -f dapi-volume.yaml
