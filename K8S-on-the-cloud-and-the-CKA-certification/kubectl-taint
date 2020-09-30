@@ -1,0 +1,42 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+- gcloud config set project mihai-281118 <type enter> (mihai-281118 - is my user from gcloud command line)
+- gcloud config set account mihaivirlan93@gmail.com
+	
+- gcloud container clusters create my-first-cluster --num-nodes 1
+- kubectl taint nodes gke-my-first-cluster-default-pool-1097a3b8-glt2 env=dev:NoSchedule
+- kubectl run nginx --image=nginx
+- kubectl label pod/nginx env=dev
+- kubectl scale pod/nginx --replicas=5
+
+- nano init.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-demo
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: workdir
+      mountPath: /usr/share/nginx/html
+  # These containers are run during pod initialization
+  initContainers:
+  - name: install
+    image: busybox
+    command:
+    - wget
+    - "-O"
+    - "/work-dir/index.html"
+    - http://kubernetes.io
+    volumeMounts:
+    - name: workdir
+      mountPath: "/work-dir"
+  dnsPolicy: Default
+  volumes:
+  - name: workdir
+    emptyDir: {}
+
+- kubectl create -f init.yaml
