@@ -1,0 +1,12 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+- kubectl get pods
+
+- nano file1.txt
+Hello!
+
+- nano file1.txt
+Hi!
+
+- kubectl create configmap fmap --from-file=file1.txt --from-file=file2.txt
+- kubectl get configmaps fmap -o yaml
+- kubectl get configmaps fmap

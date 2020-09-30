@@ -1,0 +1,33 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+	- gcloud config set project mihai-281118 <type enter> (mihai-281118 - is my user from gcloud command line)
+	- gcloud config set account mihaivirlan93@gmail.com
+	- gcloud config set compute/zone us-central1-a
+	- gcloud config set compute/region us-central1
+
+	- gcloud container clusters create my-first-cluster --num-nodes 1
+	- kubectl get namespaces
+	- kubectl get nodes
+	- gcloud compute instances list
+
+	- kubectl run wordpress --image=tutum/wordpress --port=80
+	- kubectl get pods
+	- kubectl expose pod wordpress --name=wordpress --type=LoadBalancer
+	- kubectl get services
+	- kubectl describe services wordpress
+
+	- Access from browser the exposed service and install wordpress web site
+		- http://104.198.190.188:80 (in my case this is ip for LoadBalancer exposed service)
+
+	- Delete the services/pods/nodes/cluster
+		- kubectl delete service wordpress
+		- kubectl get services
+
+		- kubectl delete pod wordpress
+		- kubectl get pods
+
+		- kubectl delete node gke-my-first-cluster-default-pool-72b9c52b-3456
+		- kubectl get nodes
+
+		- gcloud compute instances list
+		- gcloud container clusters delete my-first-cluster --region us-central1-a
+		- gcloud compute instances list

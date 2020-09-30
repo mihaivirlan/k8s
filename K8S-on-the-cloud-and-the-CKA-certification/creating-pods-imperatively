@@ -1,0 +1,23 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+	- gcloud config set project mihai-281118 <type enter> (mihai-281118 - is my user from gcloud command line)
+	- gcloud config set account mihaivirlan93@gmail.com
+	
+	- gcloud container clusters create my-first-cluster --num-nodes 1
+	- kubectl get pods
+	- kubectl run first-deployment --image=nginx
+	- kubectl get pods
+
+	- kubectl exec -it first-deployment -- /bin/bash
+		- echo Hello nginx! > /usr/share/nginx/html/index.html
+		- cat /usr/share/nginx/html/index.html
+		- apt update
+		- apt install curl
+		- curl localhost
+
+	- Delete pods
+		- kubectl delete pod first-deployment
+		- kubectl get pods
+		- kubectl delete pods --all
+
+	- Scaling the number of pods using deployments
+		- kubectl scale deployments first-deployment --replicas=3

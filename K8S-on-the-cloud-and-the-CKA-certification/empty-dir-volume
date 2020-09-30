@@ -1,0 +1,36 @@
+- Go in Google Cloud to project -> Activate Cloud Shell -> type from opened cloud shell:
+- kubectl get pods
+
+- nano pod-redis.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+    - name: redis-storage
+      mountPath: /data/redis
+  volumes:
+  - name: redis-storage
+    emptyDir: {}
+
+- kubectl create -f pod-redis.yaml
+- kubectl get pod redis --watch
+
+- kubectl exec -it redis -- /bin/bash
+	- pwd
+	- ls -la
+	- cd /
+	- ls -la
+	- cd data/redis
+	- ls -la
+	- echo Hello > test-file
+	- cat test-file
+	- apt-get update && apt-get install -y procps
+	- ps aux
+	- kill 1
+
+- kubectl get pod redis --watch
